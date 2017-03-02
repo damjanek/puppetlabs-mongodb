@@ -208,10 +208,18 @@ class mongodb::params inherits mongodb::globals {
       }
     }
     'Ubuntu': {
-      if versioncmp($::operatingsystemmajrelease, '16') >= 0 {
-        $service_provider = pick($service_provider, 'systemd')
+      if versioncmp($::puppetversion, '4.0.0') >= 0 {
+        if $facts['os']['distro']['codename'] == 'xenial' {
+          $service_provider = pick($service_provider, 'systemd')
+        } else {
+          $service_provider = pick($service_provider, 'upstart')
+        }
       } else {
-        $service_provider = pick($service_provider, 'upstart')
+        if versioncmp($::lsbmajdistrelease, '16') >= 0 {
+          $service_provider = pick($service_provider, 'systemd')
+        } else {
+          $service_provider = pick($service_provider, 'upstart')
+        }
       }
     }
     default: {
